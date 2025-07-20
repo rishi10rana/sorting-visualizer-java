@@ -7,6 +7,10 @@ public class SelectionSort implements SortingAlgorithm {
 
     @Override
     public void sort(int[] array, SortPanel panel,int delay) throws InterruptedException {
+        panel.resetTimeTaken();
+        panel.resetComparisons();
+        long startTime = System.currentTimeMillis();
+
         int n = array.length;
         for(int i=0;i<n-1;i++){
             int minIndex = i;
@@ -15,8 +19,9 @@ public class SelectionSort implements SortingAlgorithm {
                 if(array[j]<array[minIndex]){
                     minIndex = j;
                 }
+                panel.incrementComparisons();
             }
-            // swap the array[i] and the new mid element found
+            // swap the array[i] and the new mid-element found
             int temp = array[i];
             array[i] = array[minIndex];
             array[minIndex] = temp;
@@ -27,5 +32,8 @@ public class SelectionSort implements SortingAlgorithm {
         }
         panel.setHighlightIndex(-1);
         panel.repaint();
+
+        long endTime = System.currentTimeMillis();
+        panel.setTimeTaken(endTime - startTime);
     }
 }

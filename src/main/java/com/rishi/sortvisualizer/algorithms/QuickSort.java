@@ -13,6 +13,7 @@ public class QuickSort implements SortingAlgorithm {
         // count the no of elements smaller than pivot element
         int count = 0;
         for(int i=start+1;i<=end;i++){
+            panel.incrementComparisons();
             if(array[i] <= pivot){
                 count++;
             }
@@ -37,6 +38,7 @@ public class QuickSort implements SortingAlgorithm {
         int j = end;
         while(i<pivotIndex && j>pivotIndex){
             while(array[i] <= array[pivotIndex]){
+                panel.incrementComparisons();
                 panel.setHighlightIndex(i);
                 panel.repaint();
                 panel.pauseifNeeded();
@@ -45,6 +47,7 @@ public class QuickSort implements SortingAlgorithm {
             }
 
             while(array[j] > array[pivotIndex]){
+                panel.incrementComparisons();
                 panel.setHighlightIndex(j);
                 panel.repaint();
                 panel.pauseifNeeded();
@@ -91,6 +94,10 @@ public class QuickSort implements SortingAlgorithm {
 
     @Override
     public void sort(int[] array, SortPanel panel, int delay) throws InterruptedException {
+        panel.resetTimeTaken();
+        panel.resetComparisons();
+        long startTime = System.currentTimeMillis();
+
         int start = 0;
         int end = array.length-1;
         QuickSort(array,start,end,panel,delay);
@@ -98,5 +105,8 @@ public class QuickSort implements SortingAlgorithm {
         // remove any remaining higlighted index
         panel.setHighlightIndex(-1);
         panel.repaint();
+
+        long endTime = System.currentTimeMillis();
+        panel.setTimeTaken(endTime-startTime);
     }
 }

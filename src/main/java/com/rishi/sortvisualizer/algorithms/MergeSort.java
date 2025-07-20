@@ -29,6 +29,8 @@ public class MergeSort implements SortingAlgorithm {
         int j = 0;
         while(i<len1 && j<len2){
             panel.setHighlightIndex(mainIndex);
+
+            panel.incrementComparisons();
             if(left[i]<=right[j]){
                 array[mainIndex] = left[i];
                 mainIndex++;
@@ -45,6 +47,8 @@ public class MergeSort implements SortingAlgorithm {
         }
 
         while(i<len1){
+            panel.incrementComparisons();
+
             panel.setHighlightIndex(mainIndex);
             array[mainIndex] = left[i];
             mainIndex++;
@@ -55,6 +59,8 @@ public class MergeSort implements SortingAlgorithm {
         }
 
         while(j<len2){
+            panel.incrementComparisons();
+
             panel.setHighlightIndex(mainIndex);
             array[mainIndex] = right[j];
             mainIndex++;
@@ -82,11 +88,18 @@ public class MergeSort implements SortingAlgorithm {
 
     @Override
     public void sort(int[] array, SortPanel panel,int delay) throws InterruptedException {
+        panel.resetTimeTaken();
+        panel.resetComparisons();
+        long startTime = System.currentTimeMillis();
+
         int start = 0;
         int end = array.length - 1;
         mergeSort(array,start,end,panel,delay);
 
         panel.setHighlightIndex(-1);
         panel.repaint();
+
+        long endTime = System.currentTimeMillis();
+        panel.setTimeTaken(endTime-startTime);
     }
 }

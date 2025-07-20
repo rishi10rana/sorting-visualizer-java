@@ -7,6 +7,10 @@ public class BubbleSort implements SortingAlgorithm {
 
     @Override
     public void sort(int[] array, SortPanel panel,int delay) throws InterruptedException {
+        panel.resetTimeTaken();
+        panel.resetComparisons();
+        long startTime = System.currentTimeMillis();
+
         int n = array.length;
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - 1 - i; j++) {
@@ -18,6 +22,7 @@ public class BubbleSort implements SortingAlgorithm {
                     array[j] = array[j + 1];
                     array[j + 1] = temp;
                 }
+                panel.incrementComparisons();
                 panel.repaint();
                 panel.pauseifNeeded();
                 Thread.sleep(delay);
@@ -26,5 +31,8 @@ public class BubbleSort implements SortingAlgorithm {
         // koii na koii j as highlighted reh gaya ho so again make no elements highlight
         panel.setHighlightIndex(-1);
         panel.repaint();
+
+        long endTime = System.currentTimeMillis();
+        panel.setTimeTaken(endTime - startTime);
     }
 }

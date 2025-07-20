@@ -10,6 +10,40 @@ public class SortPanel extends JPanel{
     private int highlightIndex = -1;
     private int BARWIDTH = 6;
     private boolean isPaused = false;
+    private boolean isCancelled = false;
+
+    // General Information
+    private String algorithmName = "";
+    private String complexity = "";
+    private int comparisons = 0;
+    private long timeTaken = 0;
+
+    // Some Values
+    int currentSpeed = 30;
+    int currentSize = 150;
+
+
+    // Setter Functions
+    public void setAlgorithmInfo(String name, String complexity){
+        this.algorithmName = name;
+        this.complexity = complexity;
+    }
+
+    public void setTimeTaken(long timeTaken){
+        this.timeTaken = timeTaken;
+    }
+
+    public void resetTimeTaken(){
+        this.timeTaken = 0;
+    }
+
+    public void setCurrentSpeed(int speed){
+        this.currentSpeed = speed;
+    }
+
+    public void setCurrentSize(int size){
+        this.currentSize = size;
+    }
 
     @Override
     public Dimension getPreferredSize() {
@@ -39,16 +73,12 @@ public class SortPanel extends JPanel{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // To find what should be the width of each bar as it may change according to total no of elements
-        // to properly fit them in panel
-//        int width = Math.max(2,getWidth() / array.length);
-
         for(int i=0;i<array.length;i++) {
             if(i == highlightIndex) {
-                g.setColor(new Color(0xFF1414)); // For Highlighted bar
+                g.setColor(new Color(0xD244E8)); // For Highlighted bar
             }
             else {
-                g.setColor(new Color(0x5C972E));
+                g.setColor(new Color(0x39109E));
             }
 
             int barHeight = array[i];
@@ -56,13 +86,36 @@ public class SortPanel extends JPanel{
             g.fillRect(i*BARWIDTH, getHeight()-barHeight, BARWIDTH -1, barHeight);
         }
 
+        // Set some general information
+        // we use this "g" graphic object to draw things on panel
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("consolas",Font.PLAIN,14));
+
+        // place these information on top left
+        int posTextX = 10;
+        int posTextY = 20;
+
+        g.drawString("Algorithm: " + algorithmName, posTextX, posTextY);
+        g.drawString("Complexity: " + complexity, posTextX, posTextY + 20);
+        g.drawString("Comparisons: " + comparisons, posTextX, posTextY + 40);
+        g.drawString("Time taken: " + getFormatedTime(), posTextX, posTextY + 60);
+
+        String speedText = "Speed(Delay): " + currentSpeed;
+        String sizeText = "Array Size: " + currentSize;
+
+        g.drawString(speedText, posTextX, posTextY + 80);
+        g.drawString(sizeText, posTextX, posTextY + 100);
+
     }
 
     // synchronized keywork makes sure that only one thread can access this method at a time to prevent multile
     // threads causing race condition
     public synchronized void pauseifNeeded() throws InterruptedException {
-        if(isPaused){
+        while(isPaused){
             wait(); // causes the current thread to wait/pause until called or awakened which is done bu notify()
+        }
+        if(isCancelled){
+            throw new InterruptedException("Sorting Cancelled.");
         }
     }
 
@@ -86,6 +139,40 @@ public class SortPanel extends JPanel{
     // helps to set the index which needs to be highlighted
     public void setHighlightIndex(int index){
         this.highlightIndex = index;
+    }
+
+    public void incrementComparisons(){
+        this.comparisons = this.comparisons + 1;
+    }
+
+    public void resetComparisons(){
+        this.comparisons = 0;
+    }
+
+    public String getFormatedTime(){
+        // Time Taken original comes in long format
+        if(timeTaken < 1000){
+            return timeTaken + " ms";
+        }
+        else{
+            double seconds = timeTaken / 1000.0;
+            return String.format("%.2f sec" ,seconds);
+        }
+    }
+
+    // functions for cancel feature
+    public synchronized void cancel(){
+        this.isCancelled = true;
+        notify(); // will wake up thread if it was paused , to cancel it
+        this.isPaused = false;
+    }
+
+    public synchronized  void resetCancel(){
+        isCancelled = false;
+    }
+
+    public boolean isCancelled(){
+        return isCancelled;
     }
 }
 

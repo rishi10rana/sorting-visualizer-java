@@ -7,12 +7,17 @@ public class InsertionSort implements SortingAlgorithm {
 
     @Override
     public void sort(int[] array, SortPanel panel,int delay) throws InterruptedException {
+        panel.resetTimeTaken();
+        panel.resetComparisons();
+        long startTime = System.currentTimeMillis();
+
         int n = array.length;
         // as 0th element is said to be sorted as it has nothing on its left to compare to.
         for(int i=1;i<n;i++){
             int temp = array[i];
             int j=i-1;
             while(j>=0){
+                panel.incrementComparisons();
                 if(array[j]>temp){
                     // move the j index value to one position right
                     array[j+1] = array[j];
@@ -35,5 +40,8 @@ public class InsertionSort implements SortingAlgorithm {
 
         panel.setHighlightIndex(-1);
         panel.repaint();
+
+        long endTime = System.currentTimeMillis();
+        panel.setTimeTaken(endTime - startTime);
     }
 }

@@ -38,8 +38,6 @@ public class VisualizerFrame extends JFrame {
         // Control Panel
         controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        Border border  = BorderFactory.createLineBorder(new Color(0x4C8AAF),1);
-        controlPanel.setBorder(border);
 
         // Algorithm Selector Dropdown
         algoDropdown = new JComboBox<>(new String[] {"Bubble Sort", "Selection Sort","Insertion Sort","Merge Sort","Quick Sort"});
@@ -71,6 +69,8 @@ public class VisualizerFrame extends JFrame {
                 if(e.getSource()==shuffleButton){
                     int size = sizeSlider.getValue();
                     sortPanel.generateRandomArray(size);
+                    sortPanel.setCurrentSize(size);
+
                     // Again repaint the sort panel to update the view
                     sortPanel.repaint();
                 }
@@ -86,8 +86,15 @@ public class VisualizerFrame extends JFrame {
                 shuffleButton.setEnabled(false);
 
                 String algoName = (String)algoDropdown.getSelectedItem();
+                sortPanel.setAlgorithmInfo(algoName, getComplexity(algoName));
+
                 SortingAlgorithm algorithm;
                 int delay = speedSlider.getValue();
+                int size = sizeSlider.getValue();
+
+                // Update the size and size to display them
+                sortPanel.setCurrentSpeed(delay);
+                sortPanel.setCurrentSize(size);
 
                 // Check which Algorithm to implement
                 if(algoName.equals("Bubble Sort")){
@@ -117,7 +124,7 @@ public class VisualizerFrame extends JFrame {
                        try {
                            algorithm.sort(sortPanel.getArray(),sortPanel,delay);
                        } catch (InterruptedException ex) {
-                           throw new RuntimeException(ex);
+                           System.out.println("Sorting cancelled");
                        }
 
                        // when swing is again ready after the whole sorting process
@@ -125,6 +132,7 @@ public class VisualizerFrame extends JFrame {
                        SwingUtilities.invokeLater(new Runnable() {
                            @Override
                            public void run() {
+                               sortPanel.repaint(); // redraw the panel
                                startButton.setEnabled(true);
                                shuffleButton.setEnabled(true);
                            }
@@ -148,9 +156,58 @@ public class VisualizerFrame extends JFrame {
         });
         controlPanel.add(pauseButton);
 
+        // reset button
+        JButton resetButton = new JButton("Reset(Cancel)");
+        controlPanel.add(resetButton);
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // as soon  the button is preseed cancel the sorting
+                sortPanel.cancel();
+
+                // open a new thread so that you can give time to sort thread to close
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            Thread.sleep(50);
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+
+                        SwingUtilities.invokeLater(() -> {
+                            // completely reset all settings of the sort panel
+                            sortPanel.generateRandomArray(150);
+                            sortPanel.setCurrentSize(150);
+                            sortPanel.setCurrentSpeed(30);
+                            sortPanel.resetComparisons();
+                            sortPanel.resetTimeTaken();
+                            sortPanel.setHighlightIndex(-1);
+                            sortPanel.resetCancel(); // to make it false again
+                            sortPanel.setAlgorithmInfo("","");
+                            sortPanel.repaint();
+                            startButton.setEnabled(true);
+                            shuffleButton.setEnabled(true);
+                            pauseButton.setText("Stop"); // manually set it to stop if it was resume
+                        });
+                    }
+                }).start();
+            }
+        });
+
         add(controlPanel,BorderLayout.NORTH);
         setVisible(true);
     }
 
+    private String getComplexity(String algoName){
+            switch(algoName){
+                case "Bubble Sort": return "T.C = O(n²) | S.C = O(1)";
+                case "Selection Sort": return "T.C = O(n²) | S.C = O(1)";
+                case "Insertion Sort": return "T.C = O(n²) , O(n) Best | S.C = O(1)";
+                case "Merge Sort": return "T.C = O(n.logn) | S.C = O(n)";
+                case "Quick Sort": return "T.C = O(n.logn), worst O(n²) | S.C = O(logn)";
+                default: return "";
+            }
+    }
 }
 
