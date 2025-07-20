@@ -73,10 +73,13 @@ mvn exec:java -Dexec.mainClass="com.rishi.sortvisualizer.Main"
 ```
 
 ## Download JAR
+Download the latest release : 
+[Sorting_Visualizer-1.0.jar](https://github.com/rishi10rana/sorting-visualizer-java/releases/download/v1.0/Sorting_Visualizer-1.0.jar)
+
 You can also run the pre-built jar directly:
 
 ```bash
-java -jar Sorting_Visualizer-1.0-SNAPSHOT.jar
+java -jar Sorting_Visualizer-1.0.jar
 ```
 
 ## License
