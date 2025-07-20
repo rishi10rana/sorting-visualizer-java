@@ -4,6 +4,10 @@
 
 It provides an interactive way to visualize sorting by watching the process animated through colored bars.
 
+# Demo
+
+![Demo](images/demo.gif) 
+
 ## Built With
 
 - **Java** (Core Language)
@@ -24,6 +28,14 @@ It provides an interactive way to visualize sorting by watching the process anim
 - Each element in the array is represented by a **vertical bar**.
 - The **Java Graphics class** is used to draw and animate these bars.
 - The height of each bar corresponds to the value of the array element.
+
+## Screenshots
+
+![Main UI](images/welcome-screen.png)
+
+![Main UI](images/main-visualizer.png)
+
+![Main UI](images/sorting-in-progress.png)
 
 ## Features
 - **Start Button** : Begin sorting the current array   
